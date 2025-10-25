@@ -73,7 +73,7 @@ clearAll.addEventListener('click', () => {
   }
 });
 
-// gallery lightbox
+// --- Gallery Lightbox ---
 document.querySelectorAll('.thumb').forEach(t => {
   t.addEventListener('click', () => {
     const src = t.dataset.src;
@@ -92,10 +92,29 @@ document.getElementById('lightbox').addEventListener('click', (e) => {
   }
 });
 
-// initial render
+// --- Accordion (for Hymns & Family Tributes) ---
+document.querySelectorAll('.accordion-header').forEach(button => {
+  button.addEventListener('click', () => {
+    const item = button.parentElement;
+    const openItem = document.querySelector('.accordion-item.active');
+    if (openItem && openItem !== item) {
+      openItem.classList.remove('active');
+      openItem.querySelector('.accordion-content').style.maxHeight = null;
+    }
+    item.classList.toggle('active');
+    const content = item.querySelector('.accordion-content');
+    if (item.classList.contains('active')) {
+      content.style.maxHeight = content.scrollHeight + 'px';
+    } else {
+      content.style.maxHeight = null;
+    }
+  });
+});
+
+// --- Initial Setup ---
 renderTributes();
 
-// keyboard close
+// --- Keyboard Close for Lightbox ---
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
     document.getElementById('lightbox').classList.remove('show');
