@@ -4,7 +4,7 @@
   --green-light: #cce7b4;        /* Light pastel green for backgrounds */
   --white: #ffffff;              /* Pure white */
   --pink: #f8c9c2;               /* Soft childlike pink accent */
-  --muted: #a4b399;              /* Muted gray-green for calm text */
+  --muted: #e91e63;;              /* Muted gray-green for calm text */
 
   /* Background & surface */
   --bg: var(--green-light);
