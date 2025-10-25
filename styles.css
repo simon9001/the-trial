@@ -4,7 +4,7 @@
   --green-light: #cce7b4;        /* Light pastel green for backgrounds */
   --white: #ffffff;              /* Pure white */
   --pink: #f8c9c2;               /* Soft childlike pink accent */
-  --muted: #e91e63;;              /* Muted gray-green for calm text */
+  --muted: #a4b399;              /* Muted gray-green for calm text */
 
   /* Background & surface */
   --bg: var(--green-light);
@@ -238,6 +238,7 @@ footer {
   font-size: 15px;
   color: var(--muted, #555);
 }
+
 /* Responsive */
 @media (max-width: 980px) {
   main { grid-template-columns: 1fr; padding: 12px; }
