@@ -172,6 +172,18 @@ body {
   }
 
   .memorial-info h1 { font-size: 1.4rem; }
+
+  .memorial-frame {
+    position: relative;
+    width: 450px;
+    height: 450px;
+    margin: 10px auto 40px auto;
+    border-radius: 100%;
+    overflow: hidden;
+    border: 6px double var(--green);
+    box-shadow: 0 0 20px rgba(0,0,0,0.3);
+    z-index: 2;
+  }
 }
 
 /* ====== Rest of your previous CSS remains unchanged ====== */
