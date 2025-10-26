@@ -259,7 +259,7 @@ main {
 @media (max-width: 900px) and (min-width: 601px) {
   .gallery-grid {
     grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: repeat(2, 180px);
+    grid-template-rows: repeat(2, 300px);
   }
 }
 @media (max-width: 600px) {
@@ -267,7 +267,7 @@ main {
     padding-top: 20px;
     padding-bottom: 0px;
     grid-template-columns: repeat(1, 1fr);
-    grid-template-rows: repeat(2, auto);
+    grid-template-rows: repeat(2, 200);
   }
 }
 
