@@ -8,6 +8,17 @@
   <meta name="description" content="Digital memorial for Sheila Wambui — a celebration of a life filled with grace, kindness, and love." />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✵</text></svg>">
   <link rel="stylesheet" href="styles.css" />
+
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-Z13XB49ZSX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-Z13XB49ZSX');
+</script>
+
 </head>
 
 <body>
@@ -371,7 +382,7 @@
       <div id="tributes" class="card fade-in">
         <h3 style="margin-top:0">Tribute Wall</h3>
         <p class="muted">Leave your loving words, prayers, and memories in honor of Sheila.</p>
-        <form id="tributeForm" onsubmit="return false;">
+        <form id="tributeForm"  method="POST" data-netlify="true" onsubmit="return false; ">
           <div class="row" style="margin-bottom:8px">
             <input id="name" placeholder="Your name (optional)">
             <input id="relation" placeholder="Relationship (e.g., cousin, friend)">
