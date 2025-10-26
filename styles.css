@@ -4,7 +4,7 @@
   --green-light: #cce7b4;        /* Light pastel green for backgrounds */
   --white: #ffffff;              /* Pure white */
   --pink: #f8c9c2;               /* Soft childlike pink accent */
-  --muted: #a4b399;              /* Muted gray-green for calm text */
+  --muted: #020202;              /* Muted gray-green for calm text */
 
   /* Background & surface */
   --bg: var(--green-light);
@@ -19,25 +19,118 @@
 
 body {
   margin: 0;
-  background: linear-gradient(180deg, var(--bg), var(--green) 80%);
-  color: #1b1c1f;
-  line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
-}
-
-/* Header */
-header {
+  padding: 0;
+  min-height: 100vh;
   display: flex;
-  gap: 18px;
-  align-items: center;
-  padding: 24px;
-  background: var(--green);
-  color: var(--white);
-  border-bottom: 4px solid var(--pink);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  flex-direction: column;
+  background: linear-gradient(135deg, #ffd6e8, #f9b8cc, #f8c3d4, #ffe1ec);
+  background-size: 400% 400%;
+  animation: pinkFlow 25s ease-in-out infinite;
+  overflow-x: hidden;
 }
 
-.brand { display: flex; gap: 14px; align-items: center; }
+/* Animation that cycles through the pink tones */
+@keyframes pinkFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+#farewellCanvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+
+.memorial-header {
+  text-align: center;
+  padding: 20px 20px;
+  color: var(--green);
+  position: relative;
+  background: transparent;
+  z-index: 1;
+}
+
+.memory-title {
+  font-family: 'Playfair Display', cursive;
+  font-size: 2rem;
+  margin-bottom: 30px;
+  color: var(--green);
+  text-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+/* Circular Portrait Frame */
+.memorial-frame {
+  position: relative;
+  width: 450px;
+  height: 450px;
+  margin: 10px auto 40px auto;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 6px double var(--green);
+  box-shadow: 0 0 20px rgba(0,0,0,0.1);
+}
+
+.memorial-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+/* Decorative ring (flower effect substitute) */
+.flower-ring::before,
+.flower-ring::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  top: -10px; left: -10px;
+  right: -10px; bottom: -10px;
+  border: 2px dashed var(--green-light);
+  animation: spin 20s linear infinite;
+}
+.flower-ring::after {
+  border: 2px dotted var(--pink);
+  animation-direction: reverse;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Text below portrait */
+.memorial-info h1 {
+  font-family: 'DM Sans', 'Inter', sans-serif;
+  font-size: 1.8rem;
+  margin: 10px 0 6px;
+  color: var(--green);
+}
+
+.memorial-info .dates {
+  font-weight: 600;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.memorial-info .lead {
+  font-style: italic;
+  font-size: 1rem;
+  color: var(--muted);
+}
+
+/* Responsive tweaks */
+@media (max-width: 600px) {
+  .memorial-frame {
+    width: 160px;
+    height: 160px;
+  }
+  .memory-title { font-size: 1.6rem; }
+  .memorial-info h1 { font-size: 1.4rem; }
+}
 
 .logo {
   width: 74px;
@@ -119,22 +212,83 @@ main {
 /* Timeline */
 .timeline { margin-top: 12px; border-left: 3px solid var(--green); padding-left: 10px; }
 .event { margin-bottom: 10px; }
-.event h4 { color: var(--green); margin: 0 0 6px 0; }
+.event h4, h3 { color: var(--green); margin: 0 0 6px 0; }
+
 .muted { color: var(--muted); font-size: 14px; }
 
-/* Gallery */
-.grid { display: grid; gap: 10px; grid-template-columns: repeat(3, 1fr); }
+/* ====== Gallery: paging + responsive grid ====== */
+.gallery-container {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 10px;
+}
+
+/* each page occupies the full container width */
+.gallery-page {
+  flex: 0 0 100%;
+  scroll-snap-align: start;
+}
+
+/* grid inside a page (rows x cols) */
+.gallery-grid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, 200px);
+  align-items: stretch;
+  justify-items: stretch;
+}
+
+/* Thumb visual */
 .thumb {
-  aspect-ratio: 1/1;
   border-radius: 8px;
   overflow: hidden;
   cursor: pointer;
   position: relative;
   border: 2px solid var(--green-light);
-  transition: transform 0.2s ease;
+  transition: transform 0.28s ease;
+  display: block;
 }
-.thumb:hover { transform: scale(1.05); }
-.thumb img { width: 100%; height: 100%; object-fit: cover; }
+.thumb:hover { transform: scale(1.04); }
+.thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* Responsive grid counts */
+@media (max-width: 900px) and (min-width: 601px) {
+  .gallery-grid {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 180px);
+  }
+}
+@media (max-width: 600px) {
+  .gallery-grid {
+    grid-template-columns: repeat(1, 1fr);
+    grid-template-rows: repeat(2, 160px);
+  }
+}
+
+/* Lightbox overlay (expanded image) */
+#lightbox {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.9);
+  justify-content: center;
+  align-items: center;
+  z-index: 1200;
+  overflow: auto; /* allows scrolling the expanded image if large */
+  padding: 30px;
+}
+#lightbox img {
+  max-width: 95%;
+  max-height: 95%;
+  border-radius: 10px;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.6);
+}
+#lightbox.show { display: flex; }
+
 
 /* Tribute wall */
 #tributeList { display: grid; gap: 8px; margin-top: 10px; }

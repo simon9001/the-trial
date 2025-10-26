@@ -1,4 +1,4 @@
-// --- Tribute wall (localStorage demo) ---
+// ----------------- Tribute helpers (unchanged) -----------------
 const form = document.getElementById('tributeForm');
 const nameInput = document.getElementById('name');
 const relationInput = document.getElementById('relation');
@@ -9,17 +9,14 @@ const clearAll = document.getElementById('clearAll');
 
 function loadTributes() {
   const raw = localStorage.getItem('tributes_v1') || '[]';
-  try {
-    return JSON.parse(raw);
-  } catch (e) {
-    return [];
-  }
+  try { return JSON.parse(raw); } catch (e) { return []; }
 }
-
-function saveTributes(arr) {
-  localStorage.setItem('tributes_v1', JSON.stringify(arr));
+function saveTributes(arr) { localStorage.setItem('tributes_v1', JSON.stringify(arr)); }
+function escapeHtml(s) {
+  return (s + '').replace(/[&<>"']/g, c => (
+    {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]
+  ));
 }
-
 function renderTributes() {
   const tribs = loadTributes().reverse();
   list.innerHTML = '';
@@ -39,13 +36,7 @@ function renderTributes() {
   });
 }
 
-function escapeHtml(s) {
-  return (s + '').replace(/[&<>"']/g, c => (
-    {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]
-  ));
-}
-
-submit.addEventListener('click', () => {
+submit && submit.addEventListener('click', () => {
   const message = messageInput.value.trim();
   if (!message) {
     alert('Please write a short tribute.');
@@ -66,33 +57,14 @@ submit.addEventListener('click', () => {
   renderTributes();
 });
 
-clearAll.addEventListener('click', () => {
+clearAll && clearAll.addEventListener('click', () => {
   if (confirm('Clear all tributes stored locally?')) {
     localStorage.removeItem('tributes_v1');
     renderTributes();
   }
 });
 
-// --- Gallery Lightbox ---
-document.querySelectorAll('.thumb').forEach(t => {
-  t.addEventListener('click', () => {
-    const src = t.dataset.src;
-    const lb = document.getElementById('lightbox');
-    const img = document.getElementById('lightboxImg');
-    img.src = src;
-    lb.classList.add('show');
-    lb.setAttribute('aria-hidden', 'false');
-  });
-});
-
-document.getElementById('lightbox').addEventListener('click', (e) => {
-  if (e.target.id === 'lightbox' || e.target.id === 'lightboxImg') {
-    e.currentTarget.classList.remove('show');
-    e.currentTarget.setAttribute('aria-hidden', 'true');
-  }
-});
-
-// --- Accordion (for Hymns & Family Tributes) ---
+// ----------------- Accordion (unchanged) -----------------
 document.querySelectorAll('.accordion-header').forEach(button => {
   button.addEventListener('click', () => {
     const item = button.parentElement;
@@ -111,12 +83,208 @@ document.querySelectorAll('.accordion-header').forEach(button => {
   });
 });
 
-// --- Initial Setup ---
-renderTributes();
-
-// --- Keyboard Close for Lightbox ---
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') {
-    document.getElementById('lightbox').classList.remove('show');
+// ----------------- Gallery: responsive pages + auto-slide + lightbox -----------------
+document.addEventListener('DOMContentLoaded', () => {
+  const container = document.querySelector('.gallery-container');
+  const lightbox = document.getElementById('lightbox');
+  const lightboxImg = lightbox ? lightbox.querySelector('img') : null;
+  if (!container) {
+    // nothing to do
+    renderTributes();
+    return;
   }
-});
+
+  // store original thumbs (so we can rebuild pages on resize)
+  const originalThumbs = Array.from(container.querySelectorAll('.thumb'));
+  let pages = [];
+  let currentPage = 0;
+  let perPage = calcPerPage();
+  let autoSlide = null;
+  let isPaused = false;
+  let resumeTimer = null;
+  const AUTO_MS = 4000;
+
+  function calcPerPage() {
+    const w = window.innerWidth;
+    if (w > 900) return 6; // 3 cols x 2 rows
+    if (w > 600) return 4; // 2 cols x 2 rows
+    return 2;               // 1 col x 2 rows
+  }
+
+  function buildPages() {
+    perPage = calcPerPage();
+    // keep a reference to which logical index we were showing
+    const visibleStartIndex = currentPage * perPage;
+
+    // clear container and rebuild pages by chunking originalThumbs
+    container.innerHTML = '';
+    pages = [];
+    for (let i = 0; i < originalThumbs.length; i += perPage) {
+      const page = document.createElement('div');
+      page.className = 'gallery-page';
+      const grid = document.createElement('div');
+      grid.className = 'gallery-grid';
+      // append up to perPage thumbs
+      const slice = originalThumbs.slice(i, i + perPage);
+      slice.forEach(t => grid.appendChild(t));
+      page.appendChild(grid);
+      container.appendChild(page);
+      pages.push(page);
+    }
+
+    // clamp currentPage and scroll there
+    currentPage = Math.min(Math.floor(visibleStartIndex / perPage), Math.max(0, pages.length - 1));
+    requestAnimationFrame(() => {
+      container.scrollTo({ left: currentPage * container.clientWidth, behavior: 'auto' });
+    });
+
+    attachThumbHandlers();
+  }
+
+  function attachThumbHandlers() {
+    // attach click to each thumb image (these elements are reused)
+    const imgs = container.querySelectorAll('.thumb img');
+    imgs.forEach(img => {
+      img.onclick = () => {
+        openLightbox(img);
+      };
+    });
+  }
+
+  // Auto slide functions
+  function startAutoSlide() {
+    if (isPaused || pages.length <= 1) return;
+    stopAutoSlide();
+    autoSlide = setInterval(() => {
+      currentPage = (currentPage + 1) % pages.length;
+      container.scrollTo({ left: currentPage * container.clientWidth, behavior: 'smooth' });
+    }, AUTO_MS);
+  }
+  function stopAutoSlide() {
+    clearInterval(autoSlide);
+    autoSlide = null;
+  }
+
+  // pause/resume helpers (used for manual scroll)
+  function pauseThenResume() {
+    stopAutoSlide();
+    clearTimeout(resumeTimer);
+    resumeTimer = setTimeout(() => {
+      if (!isPaused) startAutoSlide();
+    }, 3000);
+  }
+
+  // scroll listener to update page index and pause/resume
+  container.addEventListener('scroll', () => {
+    clearTimeout(container._scrollTimeout);
+    stopAutoSlide();
+    container._scrollTimeout = setTimeout(() => {
+      if (!isPaused) startAutoSlide();
+    }, 3000);
+    currentPage = Math.round(container.scrollLeft / Math.max(1, container.clientWidth));
+  }, { passive: true });
+
+  container.addEventListener('wheel', () => { pauseThenResume(); }, { passive: true });
+  container.addEventListener('touchstart', () => { pauseThenResume(); }, { passive: true });
+
+  // lightbox open/close
+  function openLightbox(imgEl) {
+    if (!lightbox || !lightboxImg) return;
+    isPaused = true;
+    stopAutoSlide();
+    lightboxImg.src = imgEl.src;
+    lightboxImg.alt = imgEl.alt || '';
+    lightbox.classList.add('show');
+  }
+
+  function closeLightbox() {
+    if (!lightbox) return;
+    lightbox.classList.remove('show');
+    isPaused = false;
+    // small delay to prevent immediate auto scroll while closing animation
+    setTimeout(() => startAutoSlide(), 250);
+  }
+
+  // lightbox close handlers
+  if (lightbox) {
+    lightbox.addEventListener('click', (e) => {
+      // close if clicking outside the image or on the image
+      if (e.target === lightbox || e.target === lightboxImg) {
+        closeLightbox();
+      }
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeLightbox();
+    });
+  }
+
+  // responsive rebuild with debounce
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      const oldPer = perPage;
+      perPage = calcPerPage();
+      // rebuild pages only if per-page count changes
+      if (perPage !== oldPer) {
+        buildPages();
+      } else {
+        // still ensure pages width corrected (in case of width change)
+        container.scrollTo({ left: currentPage * container.clientWidth, behavior: 'auto' });
+      }
+    }, 220);
+  });
+
+  // initial build + start auto
+  buildPages();
+  startAutoSlide();
+
+  // expose a manual stop (useful for debugging)
+  window.__galleryStop = stopAutoSlide;
+  window.__galleryStart = startAutoSlide;
+
+  // end gallery section
+  // ------------------
+  // Initialize tributes (render)
+  renderTributes();
+
+  // ------------------ Farewell canvas (petals) ------------------
+  const canvas = document.getElementById('farewellCanvas');
+  if (canvas) {
+    const ctx = canvas.getContext('2d');
+    let petals = [];
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    petals = Array.from({length: 40}, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      size: 2 + Math.random() * 3,
+      speedY: 0.2 + Math.random() * 0.5,
+      speedX: Math.random() * 0.3 - 0.15,
+      opacity: 0.3 + Math.random() * 0.6
+    }));
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      petals.forEach(p => {
+        ctx.beginPath();
+        ctx.fillStyle = `rgba(255, 182, 193, ${p.opacity})`;
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fill();
+        p.y -= p.speedY;
+        p.x += p.speedX;
+        if (p.y < -10) p.y = canvas.height + 10;
+        if (p.x > canvas.width + 10) p.x = -10;
+        if (p.x < -10) p.x = canvas.width + 10;
+      });
+      requestAnimationFrame(animate);
+    }
+    animate();
+  }
+
+}); // end DOMContentLoaded
