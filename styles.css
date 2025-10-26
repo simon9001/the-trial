@@ -265,7 +265,7 @@ main {
 @media (max-width: 600px) {
   .gallery-grid {
     grid-template-columns: repeat(1, 1fr);
-    grid-template-rows: repeat(1, 160px);
+    grid-template-rows: repeat(2, auto);
   }
 }
 
