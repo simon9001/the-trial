@@ -261,14 +261,24 @@ main {
     grid-template-columns: repeat(2, 1fr);
     grid-template-rows: repeat(2, 300px);
   }
+.thumb img { width: 100%;
+   height: 500px; 
+   object-fit: cover;
+  display: block; }
 }
+  
+
 @media (max-width: 600px) {
   .gallery-grid {
     padding-top: 20px;
     padding-bottom: 0px;
     grid-template-columns: repeat(1, 1fr);
-    grid-template-rows: repeat(2, 200);
+    grid-template-rows: repeat(1, 200);
   }
+  .thumb img { width: 100%;
+     height: 400px; 
+     object-fit: cover;
+    display: block; }
 }
 
 /* Lightbox overlay (expanded image) */
