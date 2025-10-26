@@ -264,6 +264,8 @@ main {
 }
 @media (max-width: 600px) {
   .gallery-grid {
+    padding-top: 20px;
+    padding-bottom: 0px;
     grid-template-columns: repeat(1, 1fr);
     grid-template-rows: repeat(2, auto);
   }
