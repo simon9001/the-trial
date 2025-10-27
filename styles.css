@@ -491,6 +491,32 @@ footer {
   transform: translateY(-3px);
 }
 
+.progress-container {
+  text-align: center;
+  margin-top: 15px;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.progress-bar {
+  width: 80%;
+  max-width: 300px;
+  height: 10px;
+  background: #e0e0e0;
+  border-radius: 10px;
+  margin: 8px auto;
+  overflow: hidden;
+  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+}
+
+.progress-fill {
+  width: 0%;
+  height: 100%;
+  background: var(--green);
+  border-radius: 10px;
+  transition: width 2.5s ease;
+}
+
 
 /* Mobile (max 600px) */
 @media (max-width: 600px) {

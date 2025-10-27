@@ -440,9 +440,20 @@
       <!-- Program -->
       <div id="program" class="card fade-in">
         <h3 style="margin-top:0">Memorial & Burial Program</h3>
-        <a href="imges\proggram.jpg" download="Sheila_Memorial_Program.png" class="download-btn">
-          📥 Download Program
-        </a>
+        <a href="imges/program.png" 
+        download="Sheila_Memorial_Program.png" 
+        class="download-btn" 
+        onclick="showDownloadMessage(event)">
+       📥 Download Program
+     </a>
+     
+     <!-- Progress bar -->
+     <div id="downloadProgress" class="progress-container" style="display:none;">
+       <p>Download in progress...</p>
+       <div class="progress-bar">
+         <div class="progress-fill"></div>
+       </div>
+     </div>
         <p class="muted">A celebration of Sheila’s life and love.</p>
 
         <table>

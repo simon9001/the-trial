@@ -288,3 +288,33 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
 }); // end DOMContentLoaded
+
+function showDownloadMessage(event) {
+  event.preventDefault(); // Stop immediate download
+  const link = event.currentTarget;
+  const progressContainer = document.getElementById('downloadProgress');
+  const fill = document.querySelector('.progress-fill');
+
+  // Show progress bar
+  progressContainer.style.display = 'block';
+  fill.style.width = '0%';
+  
+  // Show alert to user
+  alert('Your download is starting...\n\nPlease keep this page open.');
+
+  // Animate progress bar
+  setTimeout(() => fill.style.width = '100%', 100);
+
+  // Simulate download delay
+  setTimeout(() => {
+    // Trigger actual download
+    const a = document.createElement('a');
+    a.href = link.getAttribute('href');
+    a.download = link.getAttribute('download');
+    a.click();
+
+    // Notify user
+    alert('✅ Download complete! Check your downloads folder.');
+    progressContainer.style.display = 'none';
+  }, 2500);
+}
