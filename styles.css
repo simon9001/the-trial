@@ -517,6 +517,36 @@ footer {
   transition: width 2.5s ease;
 }
 
+.top-meta {
+  text-align: center;
+  margin-bottom: 25px;
+  padding: 20px;
+  background: rgba(255,255,255,0.5);
+  border-radius: 14px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.top-meta h2 {
+  color: var(--green);
+  font-size: 1.8rem;
+  margin-bottom: 8px;
+}
+
+.top-meta .dates {
+  color: var(--muted);
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.top-meta .actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+
 
 /* Mobile (max 600px) */
 @media (max-width: 600px) {
