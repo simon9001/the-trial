@@ -318,3 +318,19 @@ function showDownloadMessage(event) {
     progressContainer.style.display = 'none';
   }, 2500);
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+  const switchBtn = document.getElementById('langSwitch');
+  let isKikuyu = false; // default language = English
+
+  // when clicked, toggle between English and Kikuyu
+  switchBtn.addEventListener('click', () => {
+    isKikuyu = !isKikuyu;
+    switchBtn.textContent = isKikuyu ? 'change to English' : 'change to Kikuyu';
+
+    document.querySelectorAll('.timeline .muted').forEach(p => {
+      const text = isKikuyu ? p.dataset.ki : p.dataset.en;
+      if (text) p.innerHTML = text; // ✅ changed from textContent to innerHTML
+    });
+  });
+});
