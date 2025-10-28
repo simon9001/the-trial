@@ -255,6 +255,10 @@ main {
 }
 .btn:hover { background: #43a047; }
 
+.language-toggle{
+  padding-bottom: 30px;
+}
+
 .ghost {
   background: transparent;
   color: var(--accent);
@@ -271,7 +275,8 @@ main {
 /* Timeline */
 .timeline { margin-top: 12px; padding-left: 10px; }
 .event { margin-bottom: 10px; }
-.event h4, h3, h2{ color: var(--green); margin: 0 0 6px 0; }
+.event h4, h3, h2{ color: var(--green); 
+  margin: 0 0 6px 0; }
 
 .muted { color: var(--muted); font-size: 14px; }
 
@@ -578,9 +583,10 @@ footer {
   display: inline-block;
   background-color: #25D366;
   color: white;
-  padding: 10px 18px;
+  padding: 10px 18px ;
   border-radius: 30px;
   text-decoration: none;
+  margin: 10%;
   font-weight: 600;
   font-size: 16px;
   box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3);
