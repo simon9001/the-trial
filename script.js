@@ -63,7 +63,7 @@ function renderTributes(tributes = loadTributes()) {
 async function submitToWebApp(name, relation, message) {
   const payload = { name, relation, message, uuid: userUUID, ts: Date.now() };
   try {
-    const res = await fetch('https://script.google.com/macros/s/AKfycbxK-yVC4kp5ru68wLEBkcxpSGmzxqHDIEuVkT9ljAx_5GrM9rQEOP62CSMSmwIvMp8r/exec', {
+    const res = await fetch('https://script.google.com/macros/s/AKfycbxzJa8S3Az-HVcNiKRkWG6PireVlbcr-EdZBVna_9buun-4fVsCTG0A6LoTqaf76lCW/exec', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
@@ -100,7 +100,7 @@ async function deleteTribute(id, uuid) {
 // Load all tributes from Google Apps Script
 async function loadAllTributes() {
   try {
-    const res = await fetch('https://script.google.com/macros/s/AKfycbxK-yVC4kp5ru68wLEBkcxpSGmzxqHDIEuVkT9ljAx_5GrM9rQEOP62CSMSmwIvMp8r/exec');
+    const res = await fetch('https://script.google.com/macros/s/AKfycbxzJa8S3Az-HVcNiKRkWG6PireVlbcr-EdZBVna_9buun-4fVsCTG0A6LoTqaf76lCW/exec');
     const tributes = await res.json();
     saveTributes(tributes); // cache locally
     renderTributes(tributes);
