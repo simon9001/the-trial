@@ -1,4 +1,4 @@
-// ----------------- Tribute helpers (unchanged) -----------------
+// ----------------- Tribute helpers (updated for Google Apps Script) -----------------
 const form = document.getElementById('tributeForm');
 const nameInput = document.getElementById('name');
 const relationInput = document.getElementById('relation');
@@ -7,61 +7,137 @@ const list = document.getElementById('tributeList');
 const submit = document.getElementById('submitTribute');
 const clearAll = document.getElementById('clearAll');
 
+// Generate a unique ID per visitor to identify their tributes
+if (!localStorage.getItem('user_uuid')) {
+  localStorage.setItem('user_uuid', crypto.randomUUID());
+}
+const userUUID = localStorage.getItem('user_uuid');
+
 function loadTributes() {
   const raw = localStorage.getItem('tributes_v1') || '[]';
   try { return JSON.parse(raw); } catch (e) { return []; }
 }
+
 function saveTributes(arr) { localStorage.setItem('tributes_v1', JSON.stringify(arr)); }
+
 function escapeHtml(s) {
   return (s + '').replace(/[&<>"']/g, c => (
     {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]
   ));
 }
-function renderTributes() {
-  const tribs = loadTributes().reverse();
+
+// Render tributes with delete button only for user's own tributes
+function renderTributes(tributes = loadTributes()) {
   list.innerHTML = '';
-  if (!tribs.length) {
+  if (!tributes.length) {
     list.innerHTML = '<p class="muted">No tributes yet — be the first to share a memory.</p>';
     return;
   }
-  tribs.forEach(t => {
+  tributes.reverse().forEach(t => {
     const el = document.createElement('div');
     el.className = 'tribute';
+    el.dataset.uuid = t.uuid || '';
     el.innerHTML = `
       <strong>${escapeHtml(t.name || 'Anonymous')}</strong>
       <small>• ${escapeHtml(t.relation || '')}</small>
       <div style="margin-top:6px">${escapeHtml(t.message)}</div>
+      ${t.uuid === userUUID ? '<button class="delete-btn">Delete</button>' : ''}
       <small class="muted">${new Date(t.ts).toLocaleString()}</small>`;
     list.appendChild(el);
+
+    if (t.uuid === userUUID) {
+      el.querySelector('.delete-btn').addEventListener('click', async () => {
+        if (confirm('Delete your tribute?')) {
+          await deleteTribute(t.id); // delete from Google Sheet
+          const updated = loadTributes().filter(x => x.uuid !== t.uuid);
+          saveTributes(updated);
+          renderTributes(updated);
+        }
+      });
+    }
   });
 }
 
-submit && submit.addEventListener('click', () => {
+// Submit tribute to Google Apps Script
+async function submitToWebApp(name, relation, message) {
+  const payload = { name, relation, message, uuid: userUUID, ts: Date.now() };
+  try {
+    await fetch('https://script.google.com/macros/s/AKfycbxK-yVC4kp5ru68wLEBkcxpSGmzxqHDIEuVkT9ljAx_5GrM9rQEOP62CSMSmwIvMp8r/exec', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    console.log('Submitted to Google Apps Script');
+  } catch (err) {
+    console.error('Error submitting tribute:', err);
+  }
+}
+
+// Delete tribute by ID
+async function deleteTribute(id) {
+  try {
+    await fetch('https://script.google.com/macros/s/AKfycbxK-yVC4kp5ru68wLEBkcxpSGmzxqHDIEuVkT9ljAx_5GrM9rQEOP62CSMSmwIvMp8r/exec', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ deleteId: id })
+    });
+    console.log('Deleted tribute with id', id);
+  } catch (err) {
+    console.error('Error deleting tribute:', err);
+  }
+}
+
+// Load all tributes from Google Apps Script
+async function loadAllTributes() {
+  try {
+    const res = await fetch('https://script.google.com/macros/s/AKfycbxK-yVC4kp5ru68wLEBkcxpSGmzxqHDIEuVkT9ljAx_5GrM9rQEOP62CSMSmwIvMp8r/exec');
+    const tributes = await res.json();
+    saveTributes(tributes); // cache locally
+    renderTributes(tributes);
+  } catch (err) {
+    console.error('Error loading tributes:', err);
+    renderTributes(); // fallback to local
+  }
+}
+
+// Handle form submit
+submit && submit.addEventListener('click', async () => {
+  const name = nameInput.value.trim();
+  const relation = relationInput.value.trim();
   const message = messageInput.value.trim();
+
   if (!message) {
     alert('Please write a short tribute.');
     messageInput.focus();
     return;
   }
+
+  const tribute = { id: crypto.randomUUID(), name, relation, message, ts: Date.now(), uuid: userUUID };
   const arr = loadTributes();
-  arr.push({
-    name: nameInput.value.trim(),
-    relation: relationInput.value.trim(),
-    message,
-    ts: Date.now()
-  });
+  arr.push(tribute);
   saveTributes(arr);
-  messageInput.value = '';
+  renderTributes(arr);
+
+  // Submit to Google Apps Script
+  await submitToWebApp(name, relation, message);
+
+  // Clear inputs
   nameInput.value = '';
   relationInput.value = '';
-  renderTributes();
+  messageInput.value = '';
 });
 
+// Clear all local tributes
 clearAll && clearAll.addEventListener('click', () => {
   if (confirm('Clear all tributes stored locally?')) {
     localStorage.removeItem('tributes_v1');
     renderTributes();
   }
+});
+
+// On load, fetch tributes from Google Apps Script
+document.addEventListener('DOMContentLoaded', () => {
+  loadAllTributes();
 });
 
 // ----------------- Accordion (unchanged) -----------------
