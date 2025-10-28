@@ -33,10 +33,11 @@ function renderTributes(tributes = loadTributes()) {
     list.innerHTML = '<p class="muted">No tributes yet — be the first to share a memory.</p>';
     return;
   }
-  tributes.reverse().forEach(t => {
+  tributes.slice().reverse().forEach(t => {
     const el = document.createElement('div');
     el.className = 'tribute';
     el.dataset.uuid = t.uuid || '';
+    el.dataset.id = t.id || '';
     el.innerHTML = `
       <strong>${escapeHtml(t.name || 'Anonymous')}</strong>
       <small>• ${escapeHtml(t.relation || '')}</small>
@@ -48,7 +49,7 @@ function renderTributes(tributes = loadTributes()) {
     if (t.uuid === userUUID) {
       el.querySelector('.delete-btn').addEventListener('click', async () => {
         if (confirm('Delete your tribute?')) {
-          await deleteTribute(t.id); // delete from Google Sheet
+          await deleteTribute(t.id, t.uuid); // delete from Google Sheet
           const updated = loadTributes().filter(x => x.uuid !== t.uuid);
           saveTributes(updated);
           renderTributes(updated);
@@ -58,30 +59,39 @@ function renderTributes(tributes = loadTributes()) {
   });
 }
 
-// Submit tribute to Google Apps Script
+// Submit tribute to Google Apps Script and get the generated id
 async function submitToWebApp(name, relation, message) {
   const payload = { name, relation, message, uuid: userUUID, ts: Date.now() };
   try {
-    await fetch('https://script.google.com/macros/s/AKfycbxK-yVC4kp5ru68wLEBkcxpSGmzxqHDIEuVkT9ljAx_5GrM9rQEOP62CSMSmwIvMp8r/exec', {
+    const res = await fetch('https://script.google.com/macros/s/AKfycbxK-yVC4kp5ru68wLEBkcxpSGmzxqHDIEuVkT9ljAx_5GrM9rQEOP62CSMSmwIvMp8r/exec', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
-    console.log('Submitted to Google Apps Script');
+    const data = await res.json();
+    if (data.status === 'success') {
+      return data.id; // return the sheet-generated id
+    }
+    console.error('Submission failed:', data);
   } catch (err) {
     console.error('Error submitting tribute:', err);
   }
 }
 
-// Delete tribute by ID
-async function deleteTribute(id) {
+// Delete tribute by ID and UUID
+async function deleteTribute(id, uuid) {
   try {
-    await fetch('https://script.google.com/macros/s/AKfycbxK-yVC4kp5ru68wLEBkcxpSGmzxqHDIEuVkT9ljAx_5GrM9rQEOP62CSMSmwIvMp8r/exec', {
+    const res = await fetch('https://script.google.com/macros/s/AKfycbxK-yVC4kp5ru68wLEBkcxpSGmzxqHDIEuVkT9ljAx_5GrM9rQEOP62CSMSmwIvMp8r/exec', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ deleteId: id })
+      body: JSON.stringify({ deleteId: id, uuid })
     });
-    console.log('Deleted tribute with id', id);
+    const data = await res.json();
+    if (data.status === 'deleted') {
+      console.log('Deleted tribute with id', id);
+    } else {
+      console.warn('Delete failed or not found', id);
+    }
   } catch (err) {
     console.error('Error deleting tribute:', err);
   }
@@ -112,14 +122,16 @@ submit && submit.addEventListener('click', async () => {
     return;
   }
 
-  const tribute = { id: crypto.randomUUID(), name, relation, message, ts: Date.now(), uuid: userUUID };
+  // Submit to Google Apps Script first
+  const id = await submitToWebApp(name, relation, message);
+  if (!id) return; // submission failed
+
+  // Update local cache and render
+  const tribute = { id, name, relation, message, ts: Date.now(), uuid: userUUID };
   const arr = loadTributes();
   arr.push(tribute);
   saveTributes(arr);
   renderTributes(arr);
-
-  // Submit to Google Apps Script
-  await submitToWebApp(name, relation, message);
 
   // Clear inputs
   nameInput.value = '';
