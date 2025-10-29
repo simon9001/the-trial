@@ -72,7 +72,7 @@ async function submitToWebApp(name, relation, message) {
 
   try {
     submit.disabled = true;
-    const res = await fetch(SCRIPT_URL, {
+    const res = await fetch('https://script.google.com/macros/s/AKfycbwzGSFnf0T5mkFbCD9tVbXKyw7uJN-lW1xvnszIL2HLvlJwl0B4F9yAU0QkvTPmFoNF/exec', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
