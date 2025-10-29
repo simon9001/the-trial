@@ -112,6 +112,8 @@ async function loadAllTributes() {
 
 // Handle form submit
 submit && submit.addEventListener('click', async () => {
+  console.log("Submit clicked"); // <-- check if this prints
+
   const name = nameInput.value.trim();
   const relation = relationInput.value.trim();
   const message = messageInput.value.trim();
@@ -124,7 +126,9 @@ submit && submit.addEventListener('click', async () => {
 
   // Submit to Google Apps Script first
   const id = await submitToWebApp(name, relation, message);
-  if (!id) return; // submission failed
+  console.log("Returned id:", id);
+
+  if (!id);
 
   // Update local cache and render
   const tribute = { id, name, relation, message, ts: Date.now(), uuid: userUUID };
