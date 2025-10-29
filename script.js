@@ -1,4 +1,4 @@
-// ----------------- Tribute helpers (Google Apps Script compatible) -----------------
+// ----------------- Tribute helpers -----------------
 const form = document.getElementById('tributeForm');
 const nameInput = document.getElementById('name');
 const relationInput = document.getElementById('relation');
@@ -7,8 +7,8 @@ const list = document.getElementById('tributeList');
 const submit = document.getElementById('submitTribute');
 const clearAll = document.getElementById('clearAll');
 
-// Your live Web App URL (must end with /exec)
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxk01MXya0G9zVf2zJQziMYOAUQ7ERzTEAkJbkIINGk9AnRtHA6ti3VwM-IGtSgkrK7/exec';
+// ✅ Your live Google Apps Script Web App URL (must end with /exec)
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby-JwVEMVUIRrim8XYnKf28fdjinCf47mNxNz_wlq0aisL1sENX7NjfgD3HmXxp7eVV/exec';
 
 // Unique user UUID for ownership tracking
 if (!localStorage.getItem('user_uuid')) {
@@ -18,7 +18,7 @@ const userUUID = localStorage.getItem('user_uuid');
 
 function loadTributes() {
   const raw = localStorage.getItem('tributes_v1') || '[]';
-  try { return JSON.parse(raw); } catch (e) { return []; }
+  try { return JSON.parse(raw); } catch { return []; }
 }
 
 function saveTributes(arr) {
@@ -49,7 +49,7 @@ function renderTributes(tributes = loadTributes()) {
       <small>• ${escapeHtml(t.relation || '')}</small>
       <div style="margin-top:6px">${escapeHtml(t.message)}</div>
       ${t.uuid === userUUID ? '<button class="delete-btn">Delete</button>' : ''}
-      <small class="muted">${new Date(t.ts).toLocaleString()}</small>`;
+      <small class="muted">${t.ts ? new Date(t.ts).toLocaleString() : ''}</small>`;
 
     list.appendChild(el);
 
@@ -66,30 +66,34 @@ function renderTributes(tributes = loadTributes()) {
   });
 }
 
-// Submit new tribute to Google Apps Script
+// ----------------- POST new tribute -----------------
 async function submitToWebApp(name, relation, message) {
   const payload = { name, relation, message, uuid: userUUID, ts: Date.now() };
 
   try {
+    submit.disabled = true;
     const res = await fetch(SCRIPT_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
+
     const data = await res.json();
+    submit.disabled = false;
 
     if (data.status === 'success') return data.id;
     console.error('Submission failed:', data);
-    alert('Failed to submit tribute. Please try again.');
+    alert('Failed to submit tribute.');
     return null;
   } catch (err) {
+    submit.disabled = false;
     console.error('Error submitting tribute:', err);
     alert('Unable to reach the server. Check your internet or script URL.');
     return null;
   }
 }
 
-// Delete a tribute by ID and UUID
+// ----------------- DELETE tribute -----------------
 async function deleteTribute(id, uuid) {
   try {
     const res = await fetch(SCRIPT_URL, {
@@ -109,11 +113,14 @@ async function deleteTribute(id, uuid) {
   }
 }
 
-// Load tributes from Google Sheets
+// ----------------- GET tributes -----------------
 async function loadAllTributes() {
   try {
     const res = await fetch(SCRIPT_URL);
-    const tributes = await res.json();
+    const json = await res.json();
+
+    // Expect { status: 'success', data: [...] }
+    const tributes = json?.data || [];
     saveTributes(tributes);
     renderTributes(tributes);
   } catch (err) {
@@ -122,11 +129,9 @@ async function loadAllTributes() {
   }
 }
 
-// Handle form submit
+// ----------------- Form handling -----------------
 submit?.addEventListener('click', async e => {
   e.preventDefault();
-  console.log('Submit clicked');
-
   const name = nameInput.value.trim();
   const relation = relationInput.value.trim();
   const message = messageInput.value.trim();
@@ -138,7 +143,7 @@ submit?.addEventListener('click', async e => {
   }
 
   const id = await submitToWebApp(name, relation, message);
-  if (!id) return; // stop if submission failed
+  if (!id) return;
 
   const tribute = { id, name, relation, message, ts: Date.now(), uuid: userUUID };
   const arr = loadTributes();
@@ -151,23 +156,16 @@ submit?.addEventListener('click', async e => {
   messageInput.value = '';
 });
 
-// Initialize
-loadAllTributes();
+// ----------------- Initialize -----------------
+document.addEventListener('DOMContentLoaded', loadAllTributes);
 
-
-// Clear all local tributes
-clearAll && clearAll.addEventListener('click', () => {
+// Clear all locally cached tributes
+clearAll?.addEventListener('click', () => {
   if (confirm('Clear all tributes stored locally?')) {
     localStorage.removeItem('tributes_v1');
     renderTributes();
   }
 });
-
-// On load, fetch tributes from Google Apps Script
-document.addEventListener('DOMContentLoaded', () => {
-  loadAllTributes();
-});
-
 // ----------------- Accordion (unchanged) -----------------
 document.querySelectorAll('.accordion-header').forEach(button => {
   button.addEventListener('click', () => {
