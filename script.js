@@ -116,7 +116,7 @@ async function deleteTribute(id, uuid) {
 // ----------------- GET tributes -----------------
 async function loadAllTributes() {
   try {
-    const res = await fetch(SCRIPT_URL);
+    const res = await fetch('https://script.google.com/macros/s/AKfycbwzGSFnf0T5mkFbCD9tVbXKyw7uJN-lW1xvnszIL2HLvlJwl0B4F9yAU0QkvTPmFoNF/exec');
     const json = await res.json();
 
     // Expect { status: 'success', data: [...] }

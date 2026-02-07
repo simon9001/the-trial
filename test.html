@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Embu Student Rentals - Find Your Home</title>
+    <style>
+        /* Basic styling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: linear-gradient(to bottom right, #1a237e, #283593);
+            min-height: 100vh;
+        }
+
+        /* Page visibility control */
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* Login and registration pages */
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .auth-box {
+            background: white;
+            padding: 35px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .auth-box h2 {
+            text-align: center;
+            color: #1a237e;
+            margin-bottom: 25px;
+            font-size: 26px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            color: #333;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 15px;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #1a237e;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background: #1a237e;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            background: #283593;
+        }
+
+        .auth-link {
+            text-align: center;
+            margin-top: 18px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .auth-link a {
+            color: #1a237e;
+            text-decoration: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .auth-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* Homepage */
+        .homepage {
+            min-height: 100vh;
+            background: #f5f5f5;
+        }
+
+        .navbar {
+            background: white;
+            padding: 18px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-img {
+            width: 50px;
+            height: 50px;
+            background: #1a237e;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        .logo-text {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            line-height: 1.3;
+        }
+
+        .logo-text .company-name {
+            color: #1a237e;
+            font-size: 18px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 25px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .nav-links a:hover {
+            color: #1a237e;
+        }
+
+        .logout-btn {
+            padding: 8px 18px;
+            background: #d32f2f;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 13px;
+        }
+
+        .logout-btn:hover {
+            background: #b71c1c;
+        }
+
+        /* Search section */
+        .search-section {
+            background: white;
+            padding: 35px;
+            margin: 30px 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .search-section h2 {
+            margin-bottom: 20px;
+            color: #1a237e;
+            font-size: 24px;
+        }
+
+        .search-form {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr auto;
+            gap: 12px;
+        }
+
+        .search-form input,
+        .search-form select {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .search-form input:focus,
+        .search-form select:focus {
+            outline: none;
+            border-color: #1a237e;
+        }
+
+        .search-btn {
+            padding: 12px 28px;
+            background: #2e7d32;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .search-btn:hover {
+            background: #1b5e20;
+        }
+
+        /* Rentals grid */
+        .rentals-container {
+            padding: 20px 40px 50px 40px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .rental-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .rental-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        .rental-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .rental-info {
+            padding: 20px;
+        }
+
+        .rental-price {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2e7d32;
+            margin-bottom: 8px;
+        }
+
+        .rental-location {
+            color: #555;
+            margin-bottom: 10px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .rental-description {
+            color: #666;
+            font-size: 13px;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .rental-features {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .feature {
+            background: #e8f5e9;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+            color: #2e7d32;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            color: #1a237e;
+            font-size: 22px;
+        }
+
+        .close-modal {
+            font-size: 28px;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .close-modal:hover {
+            color: #d32f2f;
+        }
+
+        .modal-image {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .detail-row {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .detail-label {
+            font-weight: bold;
+            color: #1a237e;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        .detail-value {
+            color: #555;
+            line-height: 1.6;
+            font-size: 13px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .search-form {
+                grid-template-columns: 1fr;
+            }
+
+            .navbar {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .nav-links {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .rentals-container {
+                grid-template-columns: 1fr;
+                padding: 20px;
+            }
+
+            .search-section {
+                margin: 20px;
+                padding: 25px 20px;
+            }
+        }
+
+        .loading {
+            text-align: center;
+            padding: 30px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Page -->
+    <div id="loginPage" class="page active">
+        <div class="auth-container">
+            <div class="auth-box">
+                <h2>Student Rentals Login</h2>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="loginEmail" placeholder="Enter your email">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="loginPassword" placeholder="Enter your password">
+                </div>
+                <button class="btn" onclick="handleLogin()">Login</button>
+                <div class="auth-link">
+                    Don't have an account? <a onclick="goToRegister()">Register here</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Registration Page -->
+    <div id="registerPage" class="page">
+        <div class="auth-container">
+            <div class="auth-box">
+                <h2>Create Account</h2>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="registerEmail" placeholder="Enter your email">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="registerPassword" placeholder="Create a password">
+                </div>
+                <div class="form-group">
+                    <label>Confirm Password</label>
+                    <input type="password" id="confirmPassword" placeholder="Confirm your password">
+                </div>
+                <button class="btn" onclick="handleRegister()">Register</button>
+                <div class="auth-link">
+                    Already have an account? <a onclick="goToLogin()">Login here</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Homepage -->
+    <div id="homepage" class="page homepage">
+        <nav class="navbar">
+            <div class="logo">
+                <div class="logo-img">AH</div>
+                <div class="logo-text">
+                    <div class="company-name">Allano's Helping Hand</div>
+                    <div>Enterprise</div>
+                </div>
+            </div>
+            <div class="nav-links">
+                <a onclick="showAbout()">About</a>
+                <a onclick="showContacts()">Contacts</a>
+                <a href="https://wa.me/254112791480" target="_blank">Help</a>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+        </nav>
+
+        <div class="search-section">
+            <h2>Find Your Perfect Student Rental</h2>
+            <div class="search-form">
+                <input type="text" id="searchLocation" placeholder="Search by location">
+                <select id="priceRange">
+                    <option value="">All Prices</option>
+                    <option value="0-5000">Below 5,000</option>
+                    <option value="5000-10000">5,000 - 10,000</option>
+                    <option value="10000-15000">10,000 - 15,000</option>
+                    <option value="15000+">Above 15,000</option>
+                </select>
+                <select id="roomType">
+                    <option value="">All Types</option>
+                    <option value="bedsitter">Bedsitter</option>
+                    <option value="1bedroom">1 Bedroom</option>
+                    <option value="2bedroom">2 Bedroom</option>
+                </select>
+                <button class="search-btn" onclick="searchRentals()">Search</button>
+            </div>
+        </div>
+
+        <div class="rentals-container" id="rentalsContainer">
+            <div class="loading">Loading rentals...</div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="rentalModal" class="modal" onclick="closeModalClick(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h2 id="modalTitle"></h2>
+                <span class="close-modal" onclick="closeModal()">&times;</span>
+            </div>
+            <img id="modalImage" class="modal-image" src="" alt="Rental">
+            <div id="modalDetails"></div>
+        </div>
+    </div>
+
+    <script>
+        // rentals data
+        var rentals = [
+            {
+                id: 1,
+                image: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=400&h=300&fit=crop",
+                price: "8,500",
+                location: "Embu Town",
+                type: "bedsitter",
+                bedrooms: 1,
+                bathrooms: 1,
+                description: "Modern bedsitter near Embu University main campus",
+                benefits: "24/7 water supply, Secure parking, Close to shops",
+                amenities: "WiFi ready, Modern kitchen, Tiled floors"
+            },
+            {
+                id: 2,
+                image: "https://images.unsplash.com/photo-1502672260066-6bc35f0a74a4?w=400&h=300&fit=crop",
+                price: "12,000",
+                location: "Kangaru",
+                type: "1bedroom",
+                bedrooms: 1,
+                bathrooms: 1,
+                description: "Spacious 1-bedroom apartment in quiet neighborhood",
+                benefits: "CCTV surveillance, Ample parking, Near matatu stage",
+                amenities: "Balcony, Large windows, Water heater"
+            },
+            {
+                id: 3,
+                image: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=400&h=300&fit=crop",
+                price: "6,500",
+                location: "Manyatta",
+                type: "bedsitter",
+                bedrooms: 1,
+                bathrooms: 1,
+                description: "Affordable student housing near shopping centers",
+                benefits: "Affordable rent, Good lighting, Secure area",
+                amenities: "Modern bathroom, Kitchen space, Good ventilation"
+            },
+            {
+                id: 4,
+                image: "https://images.unsplash.com/photo-1515263487990-61b07816b324?w=400&h=300&fit=crop",
+                price: "18,000",
+                location: "Embu Town CBD",
+                type: "2bedroom",
+                bedrooms: 2,
+                bathrooms: 2,
+                description: "Premium 2-bedroom apartment in town center",
+                benefits: "Prime location, 24/7 security, Backup generator",
+                amenities: "Master ensuite, Spacious living room, Modern finishes"
+            },
+            {
+                id: 5,
+                image: "https://images.unsplash.com/photo-1502672023488-70e25813eb80?w=400&h=300&fit=crop",
+                price: "9,500",
+                location: "Njukiri",
+                type: "1bedroom",
+                bedrooms: 1,
+                bathrooms: 1,
+                description: "Comfortable 1-bedroom near major roads",
+                benefits: "Easy transport access, Quiet environment",
+                amenities: "Separate kitchen, Good natural light"
+            },
+            {
+                id: 6,
+                image: "https://images.unsplash.com/photo-1536376072261-38c75010e6c9?w=400&h=300&fit=crop",
+                price: "7,200",
+                location: "Kigari",
+                type: "bedsitter",
+                bedrooms: 1,
+                bathrooms: 1,
+                description: "Budget-friendly bedsitter for students",
+                benefits: "Low deposit, Flexible payment, Close to college",
+                amenities: "Clean water, Good security"
+            }
+        ];
+
+        var allRentals = rentals;
+
+        function goToRegister() {
+            document.getElementById('loginPage').classList.remove('active');
+            document.getElementById('registerPage').classList.add('active');
+        }
+
+        function goToLogin() {
+            document.getElementById('registerPage').classList.remove('active');
+            document.getElementById('loginPage').classList.add('active');
+        }
+
+        function handleLogin() {
+            var email = document.getElementById('loginEmail').value;
+            var password = document.getElementById('loginPassword').value;
+
+            if (!email || !password) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            var users = JSON.parse(localStorage.getItem('users') || '[]');
+            var user = null;
+            
+            for (var i = 0; i < users.length; i++) {
+                if (users[i].email === email && users[i].password === password) {
+                    user = users[i];
+                    break;
+                }
+            }
+
+            if (user) {
+                alert('Login successful');
+                document.getElementById('loginPage').classList.remove('active');
+                document.getElementById('homepage').classList.add('active');
+                displayRentals(allRentals);
+            } else {
+                alert('Invalid email or password');
+            }
+        }
+
+        function handleRegister() {
+            var email = document.getElementById('registerEmail').value;
+            var password = document.getElementById('registerPassword').value;
+            var confirmPass = document.getElementById('confirmPassword').value;
+
+            if (!email || !password || !confirmPass) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            if (password !== confirmPass) {
+                alert('Passwords do not match');
+                return;
+            }
+
+            if (password.length < 6) {
+                alert('Password must be at least 6 characters');
+                return;
+            }
+
+            var users = JSON.parse(localStorage.getItem('users') || '[]');
+            
+            for (var i = 0; i < users.length; i++) {
+                if (users[i].email === email) {
+                    alert('Email already registered');
+                    return;
+                }
+            }
+
+            users.push({ email: email, password: password });
+            localStorage.setItem('users', JSON.stringify(users));
+            alert('Registration successful! Please login');
+            goToLogin();
+        }
+
+        function displayRentals(rentalsToShow) {
+            var container = document.getElementById('rentalsContainer');
+            container.innerHTML = '';
+
+            if (rentalsToShow.length === 0) {
+                container.innerHTML = '<div class="loading">No rentals found</div>';
+                return;
+            }
+
+            for (var i = 0; i < rentalsToShow.length; i++) {
+                var rental = rentalsToShow[i];
+                var card = document.createElement('div');
+                card.className = 'rental-card';
+                card.onclick = (function(r) {
+                    return function() {
+                        showRentalDetails(r);
+                    };
+                })(rental);
+
+                card.innerHTML = '<img src="' + rental.image + '" alt="Rental" class="rental-image">' +
+                    '<div class="rental-info">' +
+                    '<div class="rental-price">KES ' + rental.price + '/month</div>' +
+                    '<div class="rental-location">Location: ' + rental.location + '</div>' +
+                    '<p class="rental-description">' + rental.description + '</p>' +
+                    '<div class="rental-features">' +
+                    '<span class="feature">' + rental.bedrooms + ' Bed</span>' +
+                    '<span class="feature">' + rental.bathrooms + ' Bath</span>' +
+                    '<span class="feature">' + rental.type + '</span>' +
+                    '</div></div>';
+
+                container.appendChild(card);
+            }
+        }
+
+        function showRentalDetails(rental) {
+            document.getElementById('modalTitle').textContent = rental.location + ' - KES ' + rental.price + '/month';
+            document.getElementById('modalImage').src = rental.image;
+            
+            var detailsHtml = '<div class="detail-row">' +
+                '<div class="detail-label">Location</div>' +
+                '<div class="detail-value">' + rental.location + '</div></div>' +
+                '<div class="detail-row">' +
+                '<div class="detail-label">Monthly Rent</div>' +
+                '<div class="detail-value">KES ' + rental.price + '</div></div>' +
+                '<div class="detail-row">' +
+                '<div class="detail-label">Type</div>' +
+                '<div class="detail-value">' + rental.type + ' - ' + rental.bedrooms + ' Bedroom(s), ' + rental.bathrooms + ' Bathroom(s)</div></div>' +
+                '<div class="detail-row">' +
+                '<div class="detail-label">Description</div>' +
+                '<div class="detail-value">' + rental.description + '</div></div>' +
+                '<div class="detail-row">' +
+                '<div class="detail-label">Benefits</div>' +
+                '<div class="detail-value">' + rental.benefits + '</div></div>' +
+                '<div class="detail-row">' +
+                '<div class="detail-label">Amenities</div>' +
+                '<div class="detail-value">' + rental.amenities + '</div></div>';
+            
+            document.getElementById('modalDetails').innerHTML = detailsHtml;
+            document.getElementById('rentalModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('rentalModal').classList.remove('active');
+        }
+
+        function closeModalClick(event) {
+            if (event.target.id === 'rentalModal') {
+                closeModal();
+            }
+        }
+
+        function searchRentals() {
+            var location = document.getElementById('searchLocation').value.toLowerCase();
+            var priceRange = document.getElementById('priceRange').value;
+            var roomType = document.getElementById('roomType').value;
+
+            var filtered = [];
+
+            for (var i = 0; i < allRentals.length; i++) {
+                var rental = allRentals[i];
+                var matchLocation = true;
+                var matchPrice = true;
+                var matchType = true;
+
+                if (location) {
+                    matchLocation = rental.location.toLowerCase().indexOf(location) !== -1;
+                }
+
+                if (priceRange) {
+                    var price = parseInt(rental.price.replace(',', ''));
+                    if (priceRange === '0-5000') {
+                        matchPrice = price < 5000;
+                    } else if (priceRange === '5000-10000') {
+                        matchPrice = price >= 5000 && price <= 10000;
+                    } else if (priceRange === '10000-15000') {
+                        matchPrice = price >= 10000 && price <= 15000;
+                    } else if (priceRange === '15000+') {
+                        matchPrice = price > 15000;
+                    }
+                }
+
+                if (roomType) {
+                    matchType = rental.type === roomType;
+                }
+
+                if (matchLocation && matchPrice && matchType) {
+                    filtered.push(rental);
+                }
+            }
+
+            displayRentals(filtered);
+        }
+
+        function logout() {
+            document.getElementById('homepage').classList.remove('active');
+            document.getElementById('loginPage').classList.add('active');
+            document.getElementById('loginEmail').value = '';
+            document.getElementById('loginPassword').value = '';
+        }
+
+        function showAbout() {
+            alert('Allano\'s Helping Hand Enterprise\n\nEmbu Student Rentals Platform\n\nWe help students find affordable and quality accommodation in Embu County. Our platform connects students with verified landlords offering safe and comfortable housing options.\n\nContact us for more information.');
+        }
+
+        function showContacts() {
+            alert('Contact Information\n\nEmail: info@allanoshelpinghand.com\nPhone: +254 112 791 480\nWhatsApp: +254 112 791 480\nLocation: Embu Town, Kenya\n\nWorking Hours: Mon-Sat, 8AM-6PM');
+        }
+
+        window.onload = function() {
+            displayRentals(allRentals);
+        };
+    </script>
+</body>
+</html>
