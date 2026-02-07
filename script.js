@@ -1,5 +1,5 @@
 // ----------------- Tribute helpers -----------------
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx7C_0PcP6NR5_KXPJAKfXaNQDpfEHIzpXQ4vBoSoRTXP757LwgDAXVJnI-00ebapTIDA/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwHVNKPTGBjLXPYJOEv_yItH6X66KbKB75TnCpBRyRdfveX4Oth0Jj_uVcUlLwpi2LS9A/exec';
 
 // Wait for DOM to be fully loaded before accessing elements
 document.addEventListener('DOMContentLoaded', () => {
