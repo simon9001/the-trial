@@ -455,6 +455,7 @@ h2 {
   .gallery-grid {
     grid-template-columns: repeat(2, 1fr);
     grid-template-rows: repeat(2, minmax(180px, 30vw));
+    height: 555px;
   }
 }
 
@@ -462,9 +463,9 @@ h2 {
 @media (max-width: 600px) {
   .gallery-grid {
     padding-top: 20px;
-    padding-bottom: 0px;
-    grid-template-columns: repeat(1, 1fr);
-    grid-template-rows: repeat(1, 220px);
+    padding-bottom: 4px;
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(2, minmax(380px, 45vw));
   }
 }
 
