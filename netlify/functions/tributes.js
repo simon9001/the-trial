@@ -1,7 +1,7 @@
 export async function handler(event) {
     try {
       const SCRIPT_URL =
-        'https://script.google.com/macros/s/AKfycbypBBxnMMl5uJe7C6JQFEJXw6Qy26XSMDZ4dqZfVuQr2i7QNQ5cRSqJXSZoXFN9ETu73w/exec';
+        'https://script.google.com/macros/s/AKfycbxGJYGMlwzuMMtDF93sfvVy90WSfYaxaWWKdqM_wzqHBWM6t1XuFCgjj-ml7BxlGcLskw/exec';
   
       const res = await fetch(SCRIPT_URL, {
         method: event.httpMethod,
