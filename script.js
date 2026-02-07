@@ -1,5 +1,5 @@
 // ----------------- Tribute helpers -----------------
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwHVNKPTGBjLXPYJOEv_yItH6X66KbKB75TnCpBRyRdfveX4Oth0Jj_uVcUlLwpi2LS9A/exec';
+const SCRIPT_URL = '/.netlify/functions/tributes';
 
 // Wait for DOM to be fully loaded before accessing elements
 document.addEventListener('DOMContentLoaded', () => {
