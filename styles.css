@@ -516,6 +516,31 @@ h2 {
 }
 
 
+
+/* Tributes Page Specific Layout */
+.tributes-layout main {
+  max-width: 100%;
+  padding: 20px;
+  display: block; /* Remove the grid that constrains width */
+}
+
+.tributes-layout .card {
+  max-width: 1400px; /* Allow it to get wide but keep it readable */
+  margin: 0 auto 20px auto;
+  width: 100%;
+}
+
+.tributes-layout .tributes-grid {
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+}
+
+.tributes-layout .tributes-grid #tributeList {
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
 .tribute {
   background: var(--green-light);
   padding: 10px;
