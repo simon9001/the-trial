@@ -1,0 +1,71 @@
+<!-- tributes.html - Full Tributes for Jacob Mwanthi King'oo -->
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://www.google-analytics.com; connect-src 'self' https://script.google.com https://www.google-analytics.com; frame-src https://www.google.com https://www.google.com/maps;">
+
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Tributes - Jacob Mwanthi King'oo</title>
+    <link rel="icon" type="image/jpeg" href="imagesd/WhatsApp Image 2026-02-08 at 07.18.54.jpeg" />
+
+    <meta name="description" content="Tributes and memories for Jacob Mwanthi King'oo." />
+    <link rel="stylesheet" href="styles.css" />
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z13XB49ZSX"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-Z13XB49ZSX');
+    </script>
+
+</head>
+
+<body>
+
+    <main>
+        <section>
+            <div class="card fade-in" style="margin-bottom: 20px; display: flex; align-items: center;">
+                <a href="index.html" class="btn" style="display: inline-flex; align-items: center; gap: 8px;">
+                    <span>&larr;</span> Back to Memorial
+                </a>
+            </div>
+
+            <!-- Tribute Wall (Full) -->
+            <div id="tributes" class="card fade-in tributes-grid" style="grid-column: 1 / -1;">
+                <h3 style="margin-top:0">All Tributes</h3>
+
+                <p class="muted">Leave your loving words, prayers, and memories in honor of Jacob Mwanthi King'oo.</p>
+
+                <form id="tributeForm" method="POST" data-netlify="true" onsubmit="return false; ">
+                    <div class="row tribute-row">
+                        <input id="name" placeholder="Your name">
+                        <input id="relation" placeholder="Relationship (e.g., cousin, friend)">
+                    </div>
+                    <textarea id="message" placeholder="Write your tribute..."></textarea>
+                    <div class="submit-row">
+                        <button id="submitTribute" class="btn" type="button">Post Tribute</button>
+
+                        <button id="clearAll" class="ghost" type="button">Clear Tributes</button>
+                    </div>
+                </form>
+
+                <div id="tributeList"></div>
+            </div>
+    </main>
+
+    <footer>
+        &copy; 2026 Memorial for Jacob Mwanthi King'oo. Forever in our hearts.
+    </footer>
+    <canvas id="farewellCanvas"></canvas>
+
+    <!-- Tribute JS remains unchanged -->
+    <script src="script.js"></script>
+</body>
+
+</html>

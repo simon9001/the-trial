@@ -42,7 +42,11 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    tributes.slice().reverse().forEach(t => {
+    const limit = parseInt(list.dataset.limit || '', 10);
+    const ordered = tributes.slice().reverse();
+    const visible = Number.isFinite(limit) ? ordered.slice(0, limit) : ordered;
+
+    visible.forEach(t => {
       const el = document.createElement('div');
       el.className = 'tribute';
       el.dataset.uuid = t.uuid || '';

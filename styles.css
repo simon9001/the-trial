@@ -503,6 +503,19 @@ h2 {
   margin-top: 10px;
 }
 
+/* Grid layout for tributes page */
+.tributes-grid #tributeList {
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.tributes-grid .tribute {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+
 .tribute {
   background: var(--green-light);
   padding: 10px;
@@ -852,4 +865,9 @@ footer {
 .map-frame {
   border: 0;
   width: 100%;
-}.get-directions-btn { margin-top: 8px; display: inline-block; }
+}
+
+.get-directions-btn {
+  margin-top: 8px;
+  display: inline-block;
+}
